@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="./favicon.ico.png" type="image/x-icon" />
+    <title>דשבורד תפעולי</title>
+    <style>
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #141414;
+            overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 120px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.9), rgba(0, 0, 0, 0.9));
+            color: #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem 2rem;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.7);
+            font-size: 0.9rem;
+            z-index: 10;
+        }
+
+        footer a {
+            color: #E50914;
+            text-decoration: none;
+            margin: 0 1rem;
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: #fff;
+        }
+
+        /* Tiny Man Styles */
+        .tiny-man {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 100;
+            animation: swing 4s ease-in-out infinite;
+            z-index: 11;
+        }
+
+        .tiny-man__sign {
+            margin-bottom: 4px;
+            padding: 4px 8px;
+            background: rgba(229, 9, 20, 0.9);
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 4px;
+            box-shadow: 0 0 6px rgba(229, 9, 20, 0.8);
+            transform: translateY(-10px);
+            animation: floatSign 3s ease-in-out infinite;
+        }
+
+        .tiny-man .man {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            TRANSFORM: rotate(30deg) !important;
+        }
+
+        .tiny-man .body {
+            width: 16px;
+            height: 28px;
+            background: linear-gradient(180deg, #E50914, #8B0000);
+            border-radius: 6px;
+            margin-top: 4px;
+        }
+
+        .tiny-man .arm {
+            width: 8px;
+            height: 28px;
+            background: linear-gradient(180deg, #E50914, #8B0000);
+            border-radius: 4px;
+            position: absolute;
+        }
+
+        .tiny-man .arm.left {
+            top: -12px;
+            left: -6px;
+            transform-origin: bottom right;
+        }
+
+        .tiny-man .arm.right {
+            top: -12px;
+            right: -6px;
+            transform-origin: bottom left;
+        }
+
+        .tiny-man .head {
+            position: relative;
+            width: 24px;
+            height: 24px;
+            background: radial-gradient(circle, #fff 0%, #ddd 80%);
+            border: 2px solid #E50914;
+            border-radius: 50%;
+            margin-top: 16px;
+        }
+
+        .tiny-man .head .eyebrow {
+            width: 4px;
+            height: 2px;
+            background: #222;
+            position: absolute;
+            top: 4px;
+        }
+
+        .tiny-man .head .eyebrow.left {
+            left: 4px;
+        }
+
+        .tiny-man .head .eyebrow.right {
+            right: 4px;
+        }
+
+        .tiny-man .head .eye {
+            width: 4px;
+            height: 4px;
+            background: #222;
+            border-radius: 50%;
+            position: absolute;
+            top: 8px;
+        }
+
+        .tiny-man .head .eye.left {
+            left: 4px;
+        }
+
+        .tiny-man .head .eye.right {
+            right: 4px;
+        }
+
+        .tiny-man .head .mouth {
+            width: 8px;
+            height: 4px;
+            border-bottom: 2px solid #222;
+            border-radius: 0 0 6px 6px;
+            position: absolute;
+            bottom: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        @keyframes swing {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(10px);
+            }
+        }
+
+        @keyframes floatSign {
+
+            0%,
+            100% {
+                transform: rotate(30deg) translate(31px, -16px);
+            }
+
+            50% {
+                transform: rotate(30deg) translate(31px, -20px);
+            }
+        }
+
+
+        /* Flying Netflix N with random directions */
+        .logo-fly {
+            position: fixed;
+            left: var(--startX);
+            top: var(--startY);
+            color: rgba(229, 9, 20, 0.8);
+            text-shadow: 0 0 8px rgba(229, 9, 20, 0.6);
+            pointer-events: none;
+            opacity: 0;
+            font-size: var(--size);
+            animation: fly var(--duration) linear var(--delay) infinite;
+        }
+
+        @keyframes fly {
+            0% {
+                opacity: 0;
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(calc(var(--dirX) * 120vw), calc(var(--dirY) * 120vh)) rotate(720deg);
+            }
+        }
+
+        /* Flying Netflix N with random directions */
+        .logo-fly {
+            position: fixed;
+            left: var(--startX);
+            top: var(--startY);
+            color: rgba(229, 9, 20, 0.8);
+            text-shadow: 0 0 8px rgba(229, 9, 20, 0.6);
+            pointer-events: none;
+            opacity: 0;
+            font-size: var(--size);
+            animation: fly var(--duration) linear var(--delay) infinite;
+        }
+
+        @keyframes fly {
+            0% {
+                opacity: 0;
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(calc(var(--dirX) * 120vw), calc(var(--dirY) * 120vh)) rotate(720deg);
+            }
+        }
+
+        /* Header */
+        header {
+            margin: 2rem 0 1rem;
+            z-index: 2;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            color: #E50914;
+            text-shadow: 0 0 20px #E50914;
+            letter-spacing: 4px;
+        }
+
+        /* Dashboard containers */
+
+        .btn {
+            background: linear-gradient(45deg, #E50914, #8B0000);
+            border: none;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 50px;
+            box-shadow: 0 0 10px rgba(229, 9, 20, 0.7);
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: linear-gradient(45deg, #8B0000, #E50914);
+            box-shadow: 0 0 20px rgba(229, 9, 20, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .tableu-container {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(229, 9, 20, 0.6);
+            border-radius: 12px;
+            padding: 1.5rem;
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            width: 30vw;
+            min-width: 300px;
+            box-shadow: 0 8px 24px rgba(229, 9, 20, 0.4),
+                0 16px 48px rgba(0, 0, 0, 0.6);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tableu-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(229, 9, 20, 0.2) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(0.9);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .tableu-container:hover {
+            box-shadow: 0 8px 32px rgba(229, 9, 20, 0.6),
+                0 24px 64px rgba(0, 0, 0, 0.8);
+        }
+
+        .tableu-container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+            width: 100%;
+            padding: 20px;
+            z-index: 3;
+        }
+
+        .tableu-dashs {
+            display: flex;
+            gap: 20px;
+            align-content: flex-start;
+            justify-content: center;
+            align-items: flex-start;
+            width: 85%;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <h1>ניתוח מניית NETFLIX - בהיבט תפעולי</h1>
+    </header>
+    <!-- Tableu -->
+    <div class="tableu-dashs">
+        <div class="dash3 tableu-container">
+            <button class="btn" onclick="location.href='index.html'">לדף הראשי</button>
+            <div class='tableauPlaceholder' id='viz1750718763676' style='position: relative'><noscript><a href='#'><img
+                            alt='NETFLIX ניתוח מניית (תפעולי) '
+                            src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;NE&#47;NETFLIX_17507155898940&#47;NETFLIX_3&#47;1_rss.png'
+                            style='border: none' /></a></noscript><object class='tableauViz' style='display:none;'>
+                    <param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' />
+                    <param name='embed_code_version' value='3' />
+                    <param name='site_root' value='' />
+                    <param name='name' value='NETFLIX_17507155898940&#47;NETFLIX_3' />
+                    <param name='tabs' value='no' />
+                    <param name='toolbar' value='yes' />
+                    <param name='static_image'
+                        value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;NE&#47;NETFLIX_17507155898940&#47;NETFLIX_3&#47;1.png' />
+                    <param name='animate_transition' value='yes' />
+                    <param name='display_static_image' value='yes' />
+                    <param name='display_spinner' value='yes' />
+                    <param name='display_overlay' value='yes' />
+                    <param name='display_count' value='yes' />
+                    <param name='language' value='en-US' />
+                    <param name='filter' value='publish=yes' />
+                </object></div>
+            <script
+                type='text/javascript'>                    var divElement = document.getElementById('viz1750718763676'); var vizElement = divElement.getElementsByTagName('object')[0]; if (divElement.offsetWidth > 800) { vizElement.style.width = '100%'; vizElement.style.height = (divElement.offsetWidth * 0.75) + 'px'; } else if (divElement.offsetWidth > 500) { vizElement.style.width = '100%'; vizElement.style.height = (divElement.offsetWidth * 0.75) + 'px'; } else { vizElement.style.width = '100%'; vizElement.style.height = '777px'; } var scriptElement = document.createElement('script'); scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js'; vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+        </div>
+    </div>
+    <!-- Tiny Man Holder -->
+    <div class="tiny-man">
+        <div class="tiny-man__sign">SAGI GOLAN</div>
+        <div class="man">
+            <div class="arm left"></div>
+            <div class="arm right"></div>
+            <div class="head">
+                <div class="eyebrow left"></div>
+                <div class="eyebrow right"></div>
+                <div class="eye left"></div>
+                <div class="eye right"></div>
+                <div class="mouth"></div>
+            </div>
+            <div class="body"></div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer>
+        <span>© 2025 Netflix Analysis Dashboard</span>
+        <a href="index.html">ראשי</a>
+        <a href="dash1.html">אסטרטגי</a>
+        <a href="dash2.html">ניהולי</a>
+        <a href="dash3.html">תפעולי</a>
+    </footer>
+    <!-- Flying N's -->
+    <script>
+        const body = document.body;
+        for (let i = 0; i < 20; i++) {
+            const span = document.createElement('span');
+            span.className = 'logo-fly';
+            span.textContent = 'N';
+            // random start position
+            span.style.setProperty('--startX', (Math.random() * 100) + 'vw');
+            span.style.setProperty('--startY', (Math.random() * 100) + 'vh');
+            // random direction vector between -1 and 1
+            span.style.setProperty('--dirX', (Math.random() * 2 - 1).toFixed(2));
+            span.style.setProperty('--dirY', (Math.random() * 2 - 1).toFixed(2));
+            span.style.setProperty('--duration', (3 + Math.random() * 7) + 's');
+            span.style.setProperty('--delay', (Math.random() * 5) + 's');
+            span.style.setProperty('--size', (16 + Math.random() * 36) + 'px');
+            body.appendChild(span);
+        }
+    </script>
+</body>
+
+</html>
